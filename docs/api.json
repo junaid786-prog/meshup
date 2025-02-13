@@ -1,0 +1,416 @@
+{
+    "info": {
+      "_postman_id": "d2a1bb65-9e66-4a72-8bb0-d0e5672c1f67",
+      "name": "Twitter Marketing Mashup API",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "description": "Postman collection for the Twitter Marketing Mashup API"
+    },
+    "item": [
+      {
+        "name": "Auth",
+        "item": [
+          {
+            "name": "Signup",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"username\": \"newUser\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"securePassword\",\n  \"twitterHandle\": \"@newUser\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/api/auth/signup",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "auth", "signup"]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Login",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"username\": \"newUser\",\n  \"password\": \"securePassword\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/api/auth/login",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "auth", "login"]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Logout",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwtToken}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/api/auth/logout",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "auth", "logout"]
+              }
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Tweets",
+        "item": [
+          {
+            "name": "Search Tweets",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwtToken}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/api/tweets/search-tweets?keywords={{keywords}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "tweets", "search-tweets"],
+                "query": [
+                  {
+                    "key": "keywords",
+                    "value": "{{keywords}}",
+                    "description": "Keywords to search tweets"
+                  }
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Get Tweet by ID",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwtToken}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/api/tweets/{{tweetId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "tweets", "{{tweetId}}"]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Create Tweet",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwtToken}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"tweetId\": \"1234567890\",\n  \"text\": \"Check out our new marketing campaign!\",\n  \"authorId\": \"11111\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/api/tweets",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "tweets"]
+              }
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Replies",
+        "item": [
+          {
+            "name": "Generate Reply",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwtToken}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"tweetId\": \"1234567890\",\n  \"tweetContent\": \"I love this product launch!\",\n  \"prompt\": \"Generate a friendly marketing reply.\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/api/replies/generate",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "replies", "generate"]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Get All Replies",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwtToken}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/api/replies",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "replies"]
+              }
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Jobs",
+        "item": [
+          {
+            "name": "Get Jobs",
+            "request": {
+              "method": "GET",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/api/jobs",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "jobs"]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Create Job",
+            "request": {
+              "method": "POST",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" },
+                { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"jobName\": \"tweetSearch\",\n  \"status\": \"scheduled\",\n  \"nextRun\": \"2025-02-11T12:00:00.000Z\",\n  \"details\": \"Periodic tweet search\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/api/jobs",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "jobs"]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Update Job",
+            "request": {
+              "method": "PUT",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" },
+                { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"status\": \"running\",\n  \"lastRun\": \"2025-02-11T12:00:00.000Z\",\n  \"nextRun\": \"2025-02-11T18:00:00.000Z\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/api/jobs/{{jobId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "jobs", "{{jobId}}"]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Delete Job",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/api/jobs/{{jobId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "jobs", "{{jobId}}"]
+              }
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Configuration",
+        "item": [
+          {
+            "name": "Get Config",
+            "request": {
+              "method": "GET",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/api/config",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "config"]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Update Config",
+            "request": {
+              "method": "POST",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" },
+                { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"searchInterval\": \"6h\",\n  \"defaultPrompt\": \"Generate an engaging marketing reply.\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/api/config",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "config"]
+              }
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Users",
+        "item": [
+          {
+            "name": "Get User",
+            "request": {
+              "method": "GET",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/api/users/{{userId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "users", "{{userId}}"]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Create User",
+            "request": {
+              "method": "POST",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"username\": \"anotherUser\",\n  \"email\": \"another@example.com\",\n  \"password\": \"password123\",\n  \"twitterHandle\": \"@anotherUser\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/api/users",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "users"]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Update User",
+            "request": {
+              "method": "PUT",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" },
+                { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"updated@example.com\",\n  \"twitterHandle\": \"@updatedUser\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/api/users/{{userId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "users", "{{userId}}"]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Delete User",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/api/users/{{userId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["api", "users", "{{userId}}"]
+              }
+            },
+            "response": []
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "http://localhost:5000"
+      },
+      {
+        "key": "jwtToken",
+        "value": ""
+      },
+      {
+        "key": "keywords",
+        "value": "marketing"
+      },
+      {
+        "key": "tweetId",
+        "value": "1234567890"
+      },
+      {
+        "key": "jobId",
+        "value": "job-id-placeholder"
+      },
+      {
+        "key": "userId",
+        "value": "user-id-placeholder"
+      }
+    ]
+  }
+  
