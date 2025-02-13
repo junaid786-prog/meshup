@@ -29,7 +29,10 @@ const tweetSchema = new mongoose.Schema({
   llmReply: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: "Reply" 
-  }
+  },
+  userName: {
+    type: String
+  },
 });
 
 module.exports = mongoose.model('Tweet', tweetSchema);

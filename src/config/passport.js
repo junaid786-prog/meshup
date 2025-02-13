@@ -24,9 +24,16 @@ passport.use(
                 if (!user) {
                     user = await User.create({
                         username: profile.username,
+                        displayName: profile.displayName,
                         email: profile.emails && profile.emails[0].value ? profile.emails[0].value : `${profile.username}@twitter.com`,
                         password: "twitter-oauth",
                         twitterHandle: profile.username,
+                        profileImage: profile.photos && profile.photos[0].value ? profile.photos[0].value : "",
+                        metaData: {
+                            followers: profile._json.followers_count,
+                            following: profile._json.friends_count,
+                            tweets: profile._json.statuses_count,
+                        }
                     });
                 }
                 return done(null, user);

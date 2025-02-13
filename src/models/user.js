@@ -22,7 +22,18 @@ const userSchema = new mongoose.Schema({
   createdAt: { 
     type: Date, 
     default: Date.now 
-  }
+  },
+  metaData: {
+    followers: { type: Number, default: 0 },
+    following: { type: Number, default: 0 },
+    tweets: { type: Number, default: 0 },
+  },
+  displayName: {
+    type: String
+  },
+  profileImage: { 
+    type: String 
+  },
 });
 
 module.exports = mongoose.model('User', userSchema);

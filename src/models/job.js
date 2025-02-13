@@ -19,6 +19,10 @@ const jobSchema = new mongoose.Schema({
   },
   details: { 
     type: String 
+  },
+  metaData: {
+    data: { type: mongoose.Schema.Types.Mixed },
+    logs: { type: String }
   }
 });
 

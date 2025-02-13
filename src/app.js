@@ -12,11 +12,12 @@ const indexRoutes = require("./routes/index.routes");
 const twitterAuthRoutes = require("./routes/twitterAuth.routes");
 
 const errorHandler = require("./middlewares/errorHandler");
-const { scheduleTweetSearchJob } = require("./cronJobs");
+const { scheduleTweetSearchJob, schedulellmReplyJob } = require("./cronJobs");
 const config = require("./config/config");
 
 // Schedule the tweet search job
 scheduleTweetSearchJob();
+schedulellmReplyJob();
 
 const app = express();
 
