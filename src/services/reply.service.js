@@ -19,6 +19,8 @@ exports.generateReplyForTweet = async (tweetContent, prompt) => {
         }
       }
     );
+    console.dir(response.data, { depth: null });
+    
     return response.data.choices[0].message.content;
   } catch (error) {
     throw new Error("Error generating reply: " + error.message);
