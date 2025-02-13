@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    container_name: node_app
+    ports:
+      - "5002:5002"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - .:/usr/src/app
