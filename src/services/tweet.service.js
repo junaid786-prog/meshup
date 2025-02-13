@@ -1,5 +1,6 @@
 const axios = require("axios");
 const config = require("../config/config");
+const tweet = require("../models/tweet");
 
 exports.fetchTweetsFromTwitter = async (keywords) => {
   try {
@@ -22,3 +23,15 @@ exports.fetchTweetsFromTwitter = async (keywords) => {
     throw new Error("Error fetching tweets: " + error.message);
   }
 };
+
+exports.getTweets = async () => {
+  return await tweet.find({});
+}
+
+exports.getTweetById = async (tweetId) => {
+  return await tweet.findOne({ tweetId }).populate("llmReply");
+}
+
+exports.createTweet = async (tweetData) => {
+  return await tweet.create(tweetData);
+}

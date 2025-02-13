@@ -10,6 +10,10 @@ const indexRoutes = require("./routes/index.routes");
 const twitterAuthRoutes = require("./routes/twitterAuth.routes");
 
 const errorHandler = require("./middlewares/errorHandler");
+const { scheduleTweetSearchJob } = require("./cronJobs");
+
+// Schedule the tweet search job
+scheduleTweetSearchJob();
 
 const app = express();
 app.use(passport.initialize());

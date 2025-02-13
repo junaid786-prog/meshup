@@ -12,6 +12,14 @@ exports.searchTweets = async (req, res, next) => {
   }
 };
 
+exports.getTweets = async (req, res, next) => {
+  try {
+    const tweets = await tweetService.getTweets();
+    sendResponse(res, 200, { tweets });
+  } catch (error) {
+    next(error);
+  }
+}
 exports.getTweetById = async (req, res, next) => {
   try {
     const tweet = await Tweet.findOne({ tweetId: req.params.id }).populate("llmReply");

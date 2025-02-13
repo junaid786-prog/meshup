@@ -15,3 +15,8 @@ exports.updateJob = async (jobId, updateData) => {
 exports.deleteJob = async (jobId) => {
   return await Job.findByIdAndDelete(jobId);
 };
+
+exports.getJobByName = async (jobName) => {
+  return await Job.findOne({ jobName });
+}
+
