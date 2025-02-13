@@ -1,20 +1,25 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-
-// Initialize Passport
+const jwt = require("jsonwebtoken");
+const config = require("../config/config");
 require("../config/passport");
 
-console.log("Twitter auth routes");
-// Initiate authentication with Twitter
 router.get("/twitter", passport.authenticate("twitter"));
 
-// Twitter callback
 router.get(
   "/twitter/callback",
-  passport.authenticate("twitter", { failureRedirect: "/login" }),
+  passport.authenticate("twitter", { failureRedirect: `${config.frontendUrl}/login` }),
   (req, res) => {
-    res.redirect("/");
+    // After successful authentication, req.user is available
+    // Generate JWT token for the user
+    console.log(req.user);
+    
+    const token = jwt.sign({ id: req.user._id }, config.jwtSecret, {
+      expiresIn: config.jwtExpire,
+    });
+    // Redirect to frontend login success page with token as query parameter
+    res.redirect(`${config.frontendUrl}/login-success?token=${token}`);
   }
 );
 
