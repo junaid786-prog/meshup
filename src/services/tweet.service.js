@@ -27,7 +27,7 @@ exports.fetchTweetsFromTwitter = async (keywords, nextToken = "") => {
 };
 
 exports.getTweets = async (userId) => {
-  return await Tweet.find({ user: userId });
+  return await Tweet.find({ user: userId }).populate("llmReply");
 };
 
 exports.getTweetById = async (tweetId) => {
