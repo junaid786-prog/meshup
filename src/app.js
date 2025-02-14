@@ -23,7 +23,12 @@ const app = express();
 
 // Global Middleware
 app.use(express.json());
-app.use(cors());
+app.use(
+    cors({
+        origin: ["http://localhost:3000", "https://mashup-iota.vercel.app"],
+        credentials: true,
+    })
+);
 app.use(helmet());
 app.use(morgan("dev"));
 
