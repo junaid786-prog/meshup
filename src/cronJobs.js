@@ -2,133 +2,153 @@ const cron = require("node-cron");
 const tweetService = require("./services/tweet.service");
 const jobService = require("./services/job.service");
 const configService = require("./services/config.service");
-const config = require("./config/config");
-const tweet = require("./models/tweet");
+const tweetModel = require("./models/tweet");
+const userService = require("./services/user.service"); // Ensure we fetch users
 
+// 🚀 **Tweet Search Job** (User-Specific)
 exports.scheduleTweetSearchJob = () => {
-  // Use a schedule of every minute in development, every 1 minute in production
   const scheduleExpression = config.nodeEnv === "development" ? "* * * * *" : "0 * * * *";
-  console.log(`Setting up tweet search cron job with schedule: "${scheduleExpression}"`);
+  console.log(`🔄 Setting up **User-Specific Tweet Search Cron Job**: "${scheduleExpression}"`);
 
   cron.schedule(scheduleExpression, async () => {
-    console.log("🚀 Cron job triggered at", new Date().toISOString());
-    const jobName = "tweetSearch";
+    console.log("🚀 **Tweet Search Job Triggered** at", new Date().toISOString());
+    
     try {
-      let job = await jobService.getJobByName(jobName);
-      const now = new Date();
-      if (!job) {
-        job = await jobService.createJob({
-          jobName,
-          status: "running",
-          lastRun: now,
-          nextRun: new Date(now.getTime() + 6 * 60 * 60 * 1000)
-        });
-        console.log("Created new job record:", job);
-      } else {
-        job = await jobService.updateJob(job._id, { status: "running", lastRun: now });
-        console.log("Updated job record to running:", job);
-      }
+      // Fetch all users
+      const users = await userService.getAllUsers();
+      
+      for (const user of users) {
+        const userId = user._id;
+        const jobName = `tweetSearch_${userId}`;
 
-      // Get configuration settings for keywords
-      const config = await configService.getConfig();
-      const keywords = config.defaultKeywords || "marketing";
-      console.log("Using keywords:", keywords);
+        let job = await jobService.getJobByName(jobName, userId);
+        const now = new Date();
 
-      const tweetsData = await tweetService.fetchTweetsFromTwitter(keywords, job.metaData?.data?.next_token);
-      console.log("Fetched tweets:", tweetsData);
-
-      // Save tweets to database
-      const tweets = tweetsData.data.map(mapTweetData);
-      tweet.insertMany(tweets);
-      const nextRun = new Date(now.getTime() + 6 * 60 * 60 * 1000);
-      await jobService.updateJob(job._id,
-        {
-          status: "scheduled", nextRun, metaData: {
-            data: {
-              next_token: tweetsData.meta.next_token
-            }
-          }
-        });
-      console.log("Job updated to scheduled. Next run at", nextRun.toISOString());
-    } catch (error) {
-      console.error("Scheduled job error:", error);
-      // Optionally update job status to failed if needed
-      try {
-        const job = await jobService.getJobByName(jobName);
-        if (job) {
-          await jobService.updateJob(job._id, { status: "failed" });
-          console.log("Job updated to failed status");
+        if (!job) {
+          job = await jobService.createJob({
+            jobName,
+            user: userId,
+            status: "running",
+            lastRun: now,
+            nextRun: new Date(now.getTime() + 6 * 60 * 60 * 1000),
+          });
+          console.log(`✅ Created new **Tweet Search Job** for user: ${userId}`);
+        } else {
+          job = await jobService.updateJob(job._id, { status: "running", lastRun: now });
+          console.log(`🔄 Updated job status to **running** for user: ${userId}`);
         }
-      } catch (err) {
-        console.error("Error updating job status:", err);
+
+        // Fetch user's search keywords
+        const userConfig = await configService.getConfig(userId);
+        const keywords = userConfig.defaultKeywords || "marketing";
+
+        console.log(`🔍 Fetching tweets for **User ${userId}** with keywords: "${keywords}"`);
+
+        const tweetsData = await tweetService.fetchTweetsFromTwitter(keywords, job.metaData?.data?.next_token);
+
+        if (!tweetsData.data) {
+          console.log(`⚠️ No tweets found for **User ${userId}**`);
+          continue;
+        }
+
+        // Save tweets with user association
+        const tweets = tweetsData.data.map(tweet => ({
+          ...mapTweetData(tweet),
+          user: userId,
+        }));
+
+        await tweetModel.insertMany(tweets);
+        console.log(`✅ **Saved ${tweets.length} Tweets** for User ${userId}`);
+
+        const nextRun = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+        await jobService.updateJob(job._id, {
+          status: "scheduled",
+          nextRun,
+          metaData: { data: { next_token: tweetsData.meta?.next_token } },
+        });
+
+        console.log(`⏳ Job updated for **User ${userId}** - Next run at: ${nextRun.toISOString()}`);
       }
+    } catch (error) {
+      console.error("❌ **Tweet Search Job Error:**", error);
     }
   });
 };
 
+// 🚀 **LLM Reply Generation Job** (User-Specific)
 exports.schedulellmReplyJob = () => {
-  // For testing, run every minute in development; adjust production schedule as needed.
   const scheduleExpression = config.nodeEnv === "development" ? "* * * * *" : "0 * * * *";
-  console.log(`Setting up LLM Reply Cron job with schedule: "${scheduleExpression}"`);
+  console.log(`🔄 Setting up **User-Specific LLM Reply Cron Job**: "${scheduleExpression}"`);
 
   cron.schedule(scheduleExpression, async () => {
-    console.log("🚀 LLM Reply Cron job triggered at", new Date().toISOString());
-    const jobName = "llmReplyGeneration";
+    console.log("🚀 **LLM Reply Generation Job Triggered** at", new Date().toISOString());
+    
     try {
-      let job = await jobService.getJobByName(jobName);
-      const now = new Date();
-      if (!job) {
-        job = await jobService.createJob({
-          jobName,
-          status: "running",
-          lastRun: now,
-          nextRun: new Date(now.getTime() + 1 * 60 * 60 * 1000)
-        });
-        console.log("Created new LLM job record:", job);
-      } else {
-        job = await jobService.updateJob(job._id, { status: "running", lastRun: now });
-        console.log("Updated LLM job record to running:", job);
-      }
+      const users = await userService.getAllUsers();
+      
+      for (const user of users) {
+        const userId = user._id;
+        const jobName = `llmReplyGeneration_${userId}`;
 
-      // Find tweets without an LLM reply
-      const tweets = await tweet.find({ llmReply: { $exists: false } });
-      console.log(`Found ${tweets.length} tweets without LLM reply`);
+        let job = await jobService.getJobByName(jobName, userId);
+        const now = new Date();
 
-      // For each tweet, generate a reply and update the tweet document
-      const replyService = require("./services/reply.service");
-      for (const tweet of tweets) {
-        const conf = await configService.getConfig();
-        const prompt = conf.defaultPrompt || "Generate a friendly marketing reply.";
-        const replyText = await replyService.generateReplyForTweet(tweet.text, prompt);
-        const Reply = require("./models/reply");
-        const newReply = await Reply.create({
-          tweet: tweet._id,
-          replyText,
-          promptUsed: prompt
-        });
-        tweet.llmReply = newReply._id;
-        await tweet.save();
-        console.log(`Generated reply for tweet ${tweet.tweetId}`);
-      }
-
-      const nextRun = new Date(now.getTime() + 1 * 60 * 60 * 1000);
-      await jobService.updateJob(job._id, { status: "scheduled", nextRun });
-      console.log("LLM job updated to scheduled. Next run at", nextRun.toISOString());
-    } catch (error) {
-      console.error("Scheduled LLM Reply job error:", error);
-      try {
-        const job = await jobService.getJobByName(jobName);
-        if (job) {
-          await jobService.updateJob(job._id, { status: "failed" });
-          console.log("LLM job updated to failed status");
+        if (!job) {
+          job = await jobService.createJob({
+            jobName,
+            user: userId,
+            status: "running",
+            lastRun: now,
+            nextRun: new Date(now.getTime() + 1 * 60 * 60 * 1000),
+          });
+          console.log(`✅ Created new **LLM Reply Job** for user: ${userId}`);
+        } else {
+          job = await jobService.updateJob(job._id, { status: "running", lastRun: now });
+          console.log(`🔄 Updated job status to **running** for user: ${userId}`);
         }
-      } catch (err) {
-        console.error("Error updating LLM job status:", err);
+
+        // Find tweets without an LLM reply for this user
+        const tweets = await tweetModel.find({ user: userId, llmReply: { $exists: false } });
+
+        if (tweets.length === 0) {
+          console.log(`⚠️ No tweets to reply for **User ${userId}**`);
+          continue;
+        }
+
+        console.log(`📝 Found **${tweets.length} Tweets** for LLM Reply for User ${userId}`);
+
+        const replyService = require("./services/reply.service");
+        for (const tweet of tweets) {
+          const userConfig = await configService.getConfig(userId);
+          const prompt = userConfig.defaultPrompt || "Generate a friendly marketing reply.";
+
+          const replyText = await replyService.generateReplyForTweet(tweet.text, prompt);
+          const Reply = require("./models/reply");
+
+          const newReply = await Reply.create({
+            tweet: tweet._id,
+            replyText,
+            promptUsed: prompt,
+            user: userId,
+          });
+
+          tweet.llmReply = newReply._id;
+          await tweet.save();
+          console.log(`✅ **Generated LLM Reply for Tweet ${tweet.tweetId}** (User: ${userId})`);
+        }
+
+        const nextRun = new Date(now.getTime() + 1 * 60 * 60 * 1000);
+        await jobService.updateJob(job._id, { status: "scheduled", nextRun });
+
+        console.log(`⏳ Job updated for **User ${userId}** - Next run at: ${nextRun.toISOString()}`);
       }
+    } catch (error) {
+      console.error("❌ **LLM Reply Job Error:**", error);
     }
   });
 };
 
+// ✅ **Helper Function: Format Tweet Data**
 function mapTweetData(tweet) {
   return {
     tweetId: tweet.id,
@@ -140,7 +160,7 @@ function mapTweetData(tweet) {
       retweet_count: tweet.public_metrics?.retweet_count,
       reply_count: tweet.public_metrics?.reply_count,
       like_count: tweet.public_metrics?.like_count,
-      quote_count: tweet.public_metrics?.quote_count
-    }
+      quote_count: tweet.public_metrics?.quote_count,
+    },
   };
 }
