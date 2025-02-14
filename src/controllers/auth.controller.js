@@ -30,7 +30,7 @@ exports.logout = (req, res, next) => {
 exports.getProfile = async (req, res, next) => {
   try {
     const user = await authService.getProfile(req.user.id);
-    sendResponse(res, 200, user);
+    sendResponse(res, 200, { user });
   } catch (error) {
     next(error);
   }
