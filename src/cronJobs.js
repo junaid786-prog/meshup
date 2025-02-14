@@ -4,6 +4,7 @@ const jobService = require("./services/job.service");
 const configService = require("./services/config.service");
 const tweetModel = require("./models/tweet");
 const userService = require("./services/user.service"); // Ensure we fetch users
+const config = require("./config/config");
 
 // 🚀 **Tweet Search Job** (User-Specific)
 exports.scheduleTweetSearchJob = () => {
