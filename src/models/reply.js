@@ -18,7 +18,11 @@ const replySchema = new mongoose.Schema({
   // Optional field to log the prompt used for generating this reply
   promptUsed: { 
     type: String 
-  }
+  },
+  isPublished: { 
+    type: Boolean, 
+    default: false 
+  },
 });
 
 module.exports = mongoose.model('Reply', replySchema);

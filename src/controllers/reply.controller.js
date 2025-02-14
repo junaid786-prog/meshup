@@ -28,12 +28,17 @@ exports.getReplies = async (req, res, next) => {
 
 exports.postReplyToTweet = async (req, res, next) => {
   try {
-    const { tweetId, replyId } = req.body;
+    const tweetId = "1890211060164239759"
+    const replyId = "67ae9c2233d0d822a30a47aa";
+    console.log(tweetId, replyId, req.body);
+    
     const reply = await Reply.findById(replyId);
-    if (!reply) {
+    if (!reply || !tweetId) {
       sendResponse(res, 404, { message: "Reply not found" });
     }
-    reply.tweet = tweetId;
+    await replyService.postReplyToTweet(tweetId, reply.replyText || "");
+    // reply.tweet = tweetId;
+    reply.isPublished = true;
     await reply.save();
     sendResponse(res, 200, { message: "Reply posted to tweet" });
   }
