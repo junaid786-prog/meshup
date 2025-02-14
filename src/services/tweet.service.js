@@ -1,6 +1,7 @@
 const fetch = require("node-fetch"); // For Node versions < 18, otherwise use global fetch
 const config = require("../config/config");
 const Tweet = require("../models/tweet");
+const withPagination = require("../utils/withPagination");
 
 exports.fetchTweetsFromTwitter = async (keywords, nextToken = "") => {
   try {
@@ -26,8 +27,8 @@ exports.fetchTweetsFromTwitter = async (keywords, nextToken = "") => {
   }
 };
 
-exports.getTweets = async (userId) => {
-  return await Tweet.find({ user: userId }).populate("llmReply");
+exports.getTweets = async (userId, page = 1, limit = 10) => {
+  return await withPagination(Tweet, page, limit, { user: userId }, { createdAt: -1 }, "llmReply");
 };
 
 exports.getTweetById = async (tweetId) => {

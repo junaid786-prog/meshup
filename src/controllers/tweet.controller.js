@@ -15,8 +15,9 @@ exports.searchTweets = async (req, res, next) => {
 exports.getTweets = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const tweets = await tweetService.getTweets(userId);
-    sendResponse(res, 200, { tweets });
+    const { page, limit } = req.query;
+    const tweets = await tweetService.getTweets(userId, page, limit);
+    sendResponse(res, 200, { tweets: tweets.data, pagination: tweets.pagination });
   } catch (error) {
     next(error);
   }
