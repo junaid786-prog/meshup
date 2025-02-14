@@ -50,13 +50,12 @@ exports.postReplyToTweet = async (req, res, next) => {
 
 exports.newReply = async (req, res, next) => {
   try {
-    const { tweetId } = req.params;
-    const { replyText } = req.body;
+    const { replyText, tweetId } = req.body;
     const userId = req.user.id;
 
-    if (!replyText) {
-      return res.status(400).json({ error: 'Reply text is required' });
-    }
+    // if (!replyText) {
+    //   return res.status(400).json({ error: 'Reply text is required' });
+    // }
 
     const reply = await replyTestService.replyToTweet(userId, tweetId, "Hello World");
     res.json(reply);
