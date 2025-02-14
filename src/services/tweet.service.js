@@ -4,7 +4,7 @@ const Tweet = require("../models/tweet");
 
 exports.fetchTweetsFromTwitter = async (keywords, nextToken = "") => {
   try {
-    let url = `https://api.twitter.com/2/tweets/search/recent?query=${encodeURIComponent(keywords)}&max_results=100&tweet.fields=author_id,created_at,public_metrics,text,username,organic_metrics`;
+    let url = `https://api.twitter.com/2/tweets/search/recent?query=${keywords}&max_results=2&tweet.fields=author_id,created_at,public_metrics,text,username,organic_metrics`;
     if (nextToken) {
       url += `&next_token=${nextToken}`;
     }
