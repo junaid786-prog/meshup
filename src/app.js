@@ -38,9 +38,10 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use("/api/auth", twitterAuthRoutes);
+
 // API Routes
 app.use("/api", indexRoutes);
-app.use("/api/auth", twitterAuthRoutes);
 
 // Global Error Handler
 app.use(errorHandler);
