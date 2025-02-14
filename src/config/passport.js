@@ -15,6 +15,7 @@ passport.use(
             consumerKey: config.twitterConsumerKey,
             consumerSecret: config.twitterConsumerSecret,
             callbackURL: config.twitterCallbackUrl,
+            passReqToCallback: true,
         },
         async (token, tokenSecret, profile, done) => {
             console.log("token", token, tokenSecret, profile);
