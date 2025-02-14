@@ -4,14 +4,16 @@ const Tweet = require("../models/tweet");
 
 exports.fetchTweetsFromTwitter = async (keywords, nextToken = "") => {
   try {
-    const response = await fetch(
-      "https://api.twitter.com/2/tweets/search/recent?query=" + keywords,
-      {
-        headers: {
-          Authorization: "Bearer " + config.twitterBearerToken,
-        }
-      }
-    );
+    let url = `https://api.twitter.com/2/tweets/search/recent?query=${keywords}&max_results=11&tweet.fields=author_id,created_at,public_metrics,text&user.fields=profile_image_url,username`;
+    if (nextToken) {
+      url += `&next_token=${nextToken}`;
+    }
+    const response = await fetch(url, {
+      headers: {
+        Authorization: "Bearer " + config.twitterBearerToken,
+      },
+      timeout: 10000,
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -19,7 +21,7 @@ exports.fetchTweetsFromTwitter = async (keywords, nextToken = "") => {
     console.log("Success:", data);
     return data;
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error fetching tweets:", error);
     throw new Error("Error fetching tweets: " + error.message);
   }
 };
