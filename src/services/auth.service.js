@@ -36,3 +36,11 @@ exports.login = async (username, password) => {
 exports.logout = async () => {
   return { message: "User logged out successfully" };
 };
+
+exports.getProfile = async (userId) => {
+  const user = await User.findById(userId).select("-password");
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  return user;
+}

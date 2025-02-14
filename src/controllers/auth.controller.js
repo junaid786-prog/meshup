@@ -29,8 +29,8 @@ exports.logout = (req, res, next) => {
 
 exports.getProfile = async (req, res, next) => {
   try {
-    const user = req.user;
-    sendResponse(res, 200, { user });
+    const user = await authService.getProfile(req.user.id);
+    sendResponse(res, 200, user);
   } catch (error) {
     next(error);
   }
