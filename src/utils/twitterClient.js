@@ -1,36 +1,36 @@
-const fetch = require("node-fetch");
+const OAuth = require("oauth").OAuth;
+const config = require("../config/config");
 
 class Twitter {
-  constructor(bearerToken) {
-    this.bearerToken = bearerToken;
+  constructor(oauthToken, oauthTokenSecret) {
+    this.oauthToken = oauthToken;
+    this.oauthTokenSecret = oauthTokenSecret;
+
+    this.oauth = new OAuth(
+      "https://api.twitter.com/oauth/request_token",
+      "https://api.twitter.com/oauth/access_token",
+      config.twitterConsumerKey,
+      config.twitterConsumerSecret,
+      "1.0A",
+      null,
+      "HMAC-SHA1"
+    );
   }
 
-  async postReply(replyText, tweetId) {
-    try {
-      const url = "https://api.twitter.com/2/tweets";
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.bearerToken}`,
-        },
-        body: JSON.stringify({
-          text: replyText,
-          reply: { in_reply_to_tweet_id: tweetId },
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(`Twitter API Error: ${JSON.stringify(data)}`);
-      }
-
-      return data;
-    } catch (error) {
-      console.error("Error posting reply:", error);
-      throw error;
-    }
+  postReply(tweetData) {
+    return new Promise((resolve, reject) => {
+      const url = `https://api.twitter.com/1.1/statuses/update.json`;
+      this.oauth.post(
+        url,
+        this.oauthToken,
+        this.oauthTokenSecret,
+        tweetData,
+        (err, data) => {
+          if (err) return reject(err);
+          resolve(JSON.parse(data));
+        }
+      );
+    });
   }
 }
 

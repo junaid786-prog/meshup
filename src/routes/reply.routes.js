@@ -4,6 +4,6 @@ const replyController = require("../controllers/reply.controller");
 
 router.post("/generate", replyController.generateReply);
 router.get("/", replyController.getReplies);
-router.post("/post", replyController.postReplyToTweet);
+router.post("/post", replyController.newReply);
 
 module.exports = router;

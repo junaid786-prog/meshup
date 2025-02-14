@@ -1,5 +1,6 @@
 const Reply = require("../models/reply");
 const replyService = require("../services/reply.service");
+const replyTestService = require("../services/replytest.service");
 const { sendResponse } = require("../utils/responseHandler");
 
 exports.generateReply = async (req, res, next) => {
@@ -44,5 +45,23 @@ exports.postReplyToTweet = async (req, res, next) => {
   }
   catch (error) {
     next(error);
+  }
+}
+
+exports.newReply = async (req, res, next) => {
+  try {
+    const { tweetId } = req.params;
+    const { replyText } = req.body;
+    const userId = req.user.id;
+
+    if (!replyText) {
+      return res.status(400).json({ error: 'Reply text is required' });
+    }
+
+    const reply = await replyTestService.replyToTweet(userId, tweetId, "Hello World");
+    res.json(reply);
+  } catch (error) {
+    console.error('Reply endpoint error:', error);
+    res.status(500).json({ error: 'Failed to post reply' });
   }
 }
