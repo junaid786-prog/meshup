@@ -26,3 +26,12 @@ exports.logout = (req, res, next) => {
   // For stateless JWT authentication, logout is usually handled on the client side
   sendResponse(res, 200, { message: "User logged out successfully" });
 };
+
+exports.getProfile = async (req, res, next) => {
+  try {
+    const user = req.user;
+    sendResponse(res, 200, { user });
+  } catch (error) {
+    next(error);
+  }
+};
