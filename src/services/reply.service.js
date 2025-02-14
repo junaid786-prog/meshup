@@ -39,31 +39,18 @@ exports.getReplies = async () => {
   return await Reply.find({});
 };
 
-exports.postReplyToTwitter = async (replyId, userId) => {
+exports.postReplyToTwitter = async (replyId) => {
   try {
-    // 🔍 Find reply & associated tweet
     const reply = await Reply.findById(replyId).populate("tweet");
     if (!reply) throw new Error("Reply not found");
 
-    // 🔍 Fetch user Twitter credentials
-    const user = await User.findById(userId);
-    if (!user || !user.twitterOAuthToken || !user.twitterOAuthSecret) {
-      throw new Error("User Twitter credentials not found.");
-    }
+    const twitterClient = new Twitter(config.twitterBearerToken);
+    const response = await twitterClient.postReply(reply.replyText, reply.tweet.tweetId);
 
-    // 📝 Post reply via Twitter API
-    const tweetData = {
-      status: reply.replyText,
-      in_reply_to_status_id: reply.tweet.tweetId,
-    };
-
-    const twitterClient = new Twitter(user.twitterOAuthToken, user.twitterOAuthSecret);
-    const response = await twitterClient.postReply(tweetData);
-
-    if (response.id_str) {
+    if (response.data) {
       reply.postedToTwitter = true;
       await reply.save();
-      return { success: true, message: "Reply posted successfully!" };
+      return { success: true, message: "Reply posted successfully!", tweetId: response.data.id };
     } else {
       throw new Error("Failed to post reply.");
     }
@@ -72,6 +59,39 @@ exports.postReplyToTwitter = async (replyId, userId) => {
     throw new Error("Could not post reply to Twitter.");
   }
 };
+// exports.postReplyToTwitter = async (replyId, userId) => {
+//   try {
+//     // 🔍 Find reply & associated tweet
+//     const reply = await Reply.findById(replyId).populate("tweet");
+//     if (!reply) throw new Error("Reply not found");
+
+//     // 🔍 Fetch user Twitter credentials
+//     const user = await User.findById(userId);
+//     if (!user || !user.twitterOAuthToken || !user.twitterOAuthSecret) {
+//       throw new Error("User Twitter credentials not found.");
+//     }
+
+//     // 📝 Post reply via Twitter API
+//     const tweetData = {
+//       status: reply.replyText,
+//       in_reply_to_status_id: reply.tweet.tweetId,
+//     };
+
+//     const twitterClient = new Twitter(user.twitterOAuthToken, user.twitterOAuthSecret);
+//     const response = await twitterClient.postReply(tweetData);
+
+//     if (response.id_str) {
+//       reply.postedToTwitter = true;
+//       await reply.save();
+//       return { success: true, message: "Reply posted successfully!" };
+//     } else {
+//       throw new Error("Failed to post reply.");
+//     }
+//   } catch (error) {
+//     console.error("Error posting reply:", error);
+//     throw new Error("Could not post reply to Twitter.");
+//   }
+// };
 
 exports.postReplyToTweet = async (tweetId, replyText) => {
   try {
