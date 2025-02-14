@@ -13,7 +13,7 @@ router.get(
   (req, res) => {
     // After successful authentication, req.user is available
     // Generate JWT token for the user
-    console.log(req.user);
+    console.log("user: ", req.user);
     
     const token = jwt.sign({ id: req.user._id }, config.jwtSecret, {
       expiresIn: config.jwtExpire,

@@ -17,7 +17,7 @@ passport.use(
             callbackURL: config.twitterCallbackUrl,
         },
         async (token, tokenSecret, profile, done) => {
-            console.log(profile);
+            console.log("token", token, tokenSecret, profile);
 
             try {
                 let user = await User.findOne({ twitterHandle: profile.username });
