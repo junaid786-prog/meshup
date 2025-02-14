@@ -25,3 +25,19 @@ exports.getReplies = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.postReplyToTweet = async (req, res, next) => {
+  try {
+    const { tweetId, replyId } = req.body;
+    const reply = await Reply.findById(replyId);
+    if (!reply) {
+      sendResponse(res, 404, { message: "Reply not found" });
+    }
+    reply.tweet = tweetId;
+    await reply.save();
+    sendResponse(res, 200, { message: "Reply posted to tweet" });
+  }
+  catch (error) {
+    next(error);
+  }
+}

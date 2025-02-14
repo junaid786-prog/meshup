@@ -26,3 +26,30 @@ exports.generateReplyForTweet = async (tweetContent, prompt) => {
     throw new Error("Error generating reply: " + error.message);
   }
 };
+
+exports.createReply = async (replyData) => {
+  return await Reply.create(replyData);
+};
+
+exports.getReplies = async () => {
+  return await Reply.find({});
+};
+
+exports.postReplyToTweet = async (tweetId, replyText) => {
+  try {
+    const response = await axios.post(
+      `https://api.twitter.com/1.1/statuses/update.json?status=${encodeURIComponent(replyText)}&in_reply_to_status_id=${tweetId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${config.twitterBearerToken}`
+        }
+      }
+    );
+    console.log("Tweeted:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error posting reply:", error);
+    throw new Error("Error posting reply: " + error.message);
+  }
+};
