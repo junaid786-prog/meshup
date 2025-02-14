@@ -36,7 +36,7 @@ exports.postReplyToTweet = async (req, res, next) => {
     if (!reply || !tweetId) {
       sendResponse(res, 404, { message: "Reply not found" });
     }
-    await replyService.postReplyToTweet(tweetId, reply.replyText || "");
+    await replyService.postReplyToTwitter(replyId, req.user.id);
     // reply.tweet = tweetId;
     reply.isPublished = true;
     await reply.save();

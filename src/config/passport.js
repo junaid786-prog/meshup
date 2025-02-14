@@ -34,8 +34,19 @@ passport.use(
                             followers: profile._json.followers_count,
                             following: profile._json.friends_count,
                             tweets: profile._json.statuses_count,
-                        }
+                        },
+                        twitterOAuthToken: token,
+                        twitterOAuthSecret: tokenSecret,
                     });
+                } else {
+                    user.twitterOAuthToken = token;
+                    user.twitterOAuthSecret = tokenSecret;
+                    user.metaData = {
+                        followers: profile._json.followers_count,
+                        following: profile._json.friends_count,
+                        tweets: profile._json.statuses_count,
+                    };
+                    user = await user.save();
                 }
                 return done(null, user);
             } catch (error) {

@@ -34,6 +34,12 @@ const userSchema = new mongoose.Schema({
   profileImage: { 
     type: String 
   },
+  twitterOAuthToken: { 
+    type: String 
+  },
+  twitterOAuthSecret: { 
+    type: String 
+  },
 });
 
 module.exports = mongoose.model('User', userSchema);

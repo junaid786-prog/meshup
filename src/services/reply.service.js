@@ -46,7 +46,7 @@ exports.postReplyToTwitter = async (replyId, userId) => {
     if (!reply) throw new Error("Reply not found");
 
     // 🔍 Fetch user Twitter credentials
-    const user = await user.findById(userId);
+    const user = await User.findById(userId);
     if (!user || !user.twitterOAuthToken || !user.twitterOAuthSecret) {
       throw new Error("User Twitter credentials not found.");
     }
