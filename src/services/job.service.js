@@ -16,7 +16,6 @@ exports.deleteJob = async (jobId) => {
   return await Job.findByIdAndDelete(jobId);
 };
 
-exports.getJobByName = async (jobName) => {
-  return await Job.findOne({ jobName });
-}
-
+exports.getJobByName = async (jobName, userId) => {
+  return await Job.findOne({ jobName, user: userId });
+};
