@@ -23,7 +23,11 @@ const jobSchema = new mongoose.Schema({
   metaData: {
     data: { type: mongoose.Schema.Types.Mixed },
     logs: { type: String }
-  }
+  },
+  user: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User' 
+  },
 });
 
 module.exports = mongoose.model('Job', jobSchema);

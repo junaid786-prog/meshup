@@ -2,8 +2,9 @@ const jobService = require("../services/job.service");
 const { sendResponse } = require("../utils/responseHandler");
 
 exports.getJobs = async (req, res, next) => {
+  let user = req.user;
   try {
-    const jobs = await jobService.getJobStatus();
+    const jobs = await jobService.getJobStatus({ userId: user._id });
     sendResponse(res, 200, { jobs });
   } catch (error) {
     next(error);
@@ -11,8 +12,9 @@ exports.getJobs = async (req, res, next) => {
 };
 
 exports.createJob = async (req, res, next) => {
+  let user = req.user;
   try {
-    const newJob = await jobService.createJob(req.body);
+    const newJob = await jobService.createJob({ ...req.body, userId: user._id });
     sendResponse(res, 201, { job: newJob });
   } catch (error) {
     next(error);

@@ -1,7 +1,7 @@
 const Job = require("../models/job");
 
-exports.getJobStatus = async () => {
-  return await Job.find({});
+exports.getJobStatus = async (query) => {
+  return await Job.find(query);
 };
 
 exports.createJob = async (jobData) => {
