@@ -4,8 +4,8 @@ const { sendResponse } = require("../utils/responseHandler");
 
 exports.searchTweets = async (req, res, next) => {
   try {
-    const { keywords } = req.query;
-    const tweets = await tweetService.fetchTweetsFromTwitter(keywords);
+    const { keywords, nextToken } = req.query;
+    const tweets = await tweetService.fetchTweetsFromTwitter(keywords, nextToken);
     sendResponse(res, 200, { tweets });
   } catch (error) {
     next(error);
@@ -14,15 +14,17 @@ exports.searchTweets = async (req, res, next) => {
 
 exports.getTweets = async (req, res, next) => {
   try {
-    const tweets = await tweetService.getTweets();
+    const userId = req.user.id;
+    const tweets = await tweetService.getTweets(userId);
     sendResponse(res, 200, { tweets });
   } catch (error) {
     next(error);
   }
-}
+};
+
 exports.getTweetById = async (req, res, next) => {
   try {
-    const tweet = await Tweet.findOne({ tweetId: req.params.id }).populate("llmReply");
+    const tweet = await tweetService.getTweetById(req.params.id);
     sendResponse(res, 200, { tweet });
   } catch (error) {
     next(error);
@@ -31,8 +33,10 @@ exports.getTweetById = async (req, res, next) => {
 
 exports.createTweet = async (req, res, next) => {
   try {
-    const tweet = new Tweet(req.body);
-    await tweet.save();
+    const userId = req.user.id;
+    // Attach the logged-in user's ID to the tweet data
+    const tweetData = { ...req.body, user: userId };
+    const tweet = await tweetService.createTweet(tweetData);
     sendResponse(res, 201, { tweet });
   } catch (error) {
     next(error);

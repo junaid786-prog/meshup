@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const tweetSchema = new mongoose.Schema({
   tweetId: { 
@@ -33,6 +33,10 @@ const tweetSchema = new mongoose.Schema({
   userName: {
     type: String
   },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  }
 });
 
-module.exports = mongoose.model('Tweet', tweetSchema);
+module.exports = mongoose.model("Tweet", tweetSchema);
