@@ -8,7 +8,7 @@ const config = require("./config/config");
 
 // 🚀 **Tweet Search Job** (User-Specific)
 exports.scheduleTweetSearchJob = () => {
-  const scheduleExpression = config.nodeEnv === "development" ? "* * * * *" : "0 * * * *";
+  const scheduleExpression = "0 */6 * * *";
   console.log(`🔄 Setting up **User-Specific Tweet Search Cron Job**: "${scheduleExpression}"`);
 
   cron.schedule(scheduleExpression, async () => {
